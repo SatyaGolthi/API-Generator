@@ -1,0 +1,117 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<title>OSCE API Builder</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../static/css/bootstrap.min.css" rel="stylesheet"
+	th:href="@{/css/bootstrap.min.css}" />
+<link href="../static/css/common.css" rel="stylesheet"
+	th:href="@{/css/common.css}" />
+<link href="../static/css/download.css" rel="stylesheet"
+	th:href="@{/css/download.css}" />
+<link href="../static/css/loader.css" rel="stylesheet"
+	th:href="@{/css/loader.css}" />
+
+</head>
+<body>
+	<div class="fixed-header">
+		<div class="container">
+			<img src="images/OSCE2.png" alt="OSCE" class="logo1">
+			<h1 style="color: rgb(8, 213, 245); float: left;">OSCE</h1>
+
+		</div>
+	</div>
+	<div style="display: none;" th:id="loader"></div>
+	<div class="container">
+		<div>
+			<form method="POST" enctype="multipart/form-data" action="#"
+				th:action="@{/}" th:object="${formWrapper}" class="form-signin">
+				<h2 class="form-signin-heading">OSCE API Builder</h2>
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<input type="text" th:class="form-control"
+						th:errorclass="has-error" th:field="*{title}" placeholder="Title" />
+					<p th:class="has-error" th:if="${#fields.hasErrors('title')}"
+						th:errors="*{title}">Title Error</p>
+				</div>
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<input type="text" th:class="form-control"
+						th:errorclass="has-error" th:field="*{description}"
+						placeholder="Description" />
+					<p th:class="has-error" th:if="${#fields.hasErrors('description')}"
+						th:errors="*{description}">Description Error</p>
+				</div>
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<input type="text" th:class="form-control"
+						th:errorclass="has-error" th:field="*{host}" placeholder="Host" />
+					<p th:class="has-error" th:if="${#fields.hasErrors('host')}"
+						th:errors="*{host}">Host Error</p>
+				</div>
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<input type="text" th:class="form-control"
+						th:errorclass="has-error" th:field="*{basepath}"
+						placeholder="Basepath" />
+					<p th:class="has-error" th:if="${#fields.hasErrors('basepath')}"
+						th:errors="*{basepath}">Basepath Error</p>
+				</div>
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<div>
+						<input accept=".xsd" type="file" th:field="*{file}" th:id="file"
+							id="real-input"> <label for="file"
+							class="browse-btn form-control">Browse Schema</label> <span
+							class="file-info" th:id="filename">No Schema Chosen</span>
+					</div>
+					<br>
+					<p th:class="has-error" th:if="${#fields.hasErrors('file')}"
+						th:errors="*{file}">File Error</p>
+				</div>
+				<input class="btn btn-lg btn-primary btn-block submit-btn"
+					type="submit" th:id="submit" value="Generate Artifacts" />
+			</form>
+			<script th:inline="javascript">
+				var fileInput = document.getElementById('file');
+
+				fileInput.onchange = function() {
+					var filePath = fileInput.value;
+					var allowedExtensions = /(\.xsd|\.json)$/i;
+					if (!allowedExtensions.exec(filePath)) {
+						alert('Please upload file having extension .xsd and .json only.');
+						fileInput.value = '';
+						document.getElementById('filename').innerHTML = 'Upload XSD'
+					} else if (fileInput.files.length > 0) {
+						document.getElementById('filename').innerHTML = fileInput.files[0].name;
+					}
+				};
+
+				var submit = document.getElementById('submit');
+				submit.onclick = function() {
+					if (document.getElementById('message') != null)
+						document.getElementById('message').style.display = 'none';
+					if (document.getElementById('download') != null)
+						document.getElementById('download').style.display = 'none';
+					if (document.getElementById('errorMessage') != null)
+						document.getElementById('errorMessage').style.display = 'none';
+					if (document.getElementById('response') != null)
+						document.getElementById('response').style.display = 'none';
+					if (document.getElementById('loader') != null)
+						document.getElementById('loader').style.display = 'block';
+					var div= document.createElement("div");
+				    div.className += "overlay";
+				    document.body.appendChild(div);
+				}
+			</script>
+
+		</div>
+	</div>
+	<div class="container" th:id="response">
+		<div th:if="${message}" th:id="message">
+			<h2 class="form-signin-heading" th:text="${message}"></h2>
+			<a th:href="${file}"><input class="browse-btn form-control"
+				type="submit" th:id="download" value="Download API Artifacts" /></a>
+		</div>
+		<div th:id="errorMessage" th:if="${error}">
+			<h2 class="form-signin-heading" th:text="${error}">${error}</h2>
+		</div>
+	</div>
+
+</body>
+</html>
